@@ -179,6 +179,150 @@ for _, npc in pairs(workspace:WaitForChild("NPCs"):GetChildren()) do
     end
 end
 
+local npcCoroutine = coroutine.wrap(function()
+    while wait() do
+        for _, npc in pairs(workspace:WaitForChild("NPCs"):GetChildren()) do
+            local npcHum = npc:FindFirstChild("Humanoid")
+            if npcHum then
+                wait(.1)
+                local npcFound = false
+                for _, wp in pairs(workspace.CurrentCamera:GetChildren()) do
+                    if wp.Name == npc.Name then
+                        npcFound = true
+                    end
+                end
+                if npcHum.Health > 0 and npcFound == false then
+                    if npc.Name == "The Exiled" or npc.Name == "Minotaur" then
+                        local createWaypoint = newWaypoint:Clone()
+                        createWaypoint.Name = npc.Name
+                        createWaypoint.UI.NPCName.Text = npc.Name
+                        createWaypoint.Parent = workspace.CurrentCamera
+                        waypoints[#waypoints+1] = createWaypoint
+                        local updateWaypoint = coroutine.wrap(function()
+                        local success, err = pcall(function()
+                            while wait() do
+                                if npc and createWaypoint then
+                                    local npcHum = npc:FindFirstChild("Humanoid")
+                                    if npcHum then
+                                        if npcHum.Health <= 0 then
+                                            for i, wp in pairs(waypoints) do
+                                                if wp == createWaypoint then
+                                                    waypoints[i] = nil
+                                                end
+                                            end
+                                            createWaypoint:Destroy()
+                                        end
+                                    else
+                                        for i, wp in pairs(waypoints) do
+                                            if wp == createWaypoint then
+                                                waypoints[i] = nil
+                                            end
+                                        end
+                                        createWaypoint:Destroy()
+                                    end
+                                    createWaypoint.CFrame = npc.PrimaryPart.CFrame
+                                    local plr = game:GetService("Players").LocalPlayer
+                                    local chara = plr.Character or plr.CharacterAdded:Wait()
+                                    local hrp = chara.PrimaryPart or chara:WaitForChild("HumanoidRootPart")
+                                    createWaypoint.UI.Distance.Text = math.ceil(((hrp.Position - npc.PrimaryPart.Position).Magnitude)/3.571).."m"
+                                else
+                                    if createWaypoint then
+                                        for i, wp in pairs(waypoints) do
+                                            if wp == createWaypoint then
+                                                waypoints[i] = nil
+                                            end
+                                        end
+                                        createWaypoint:Destroy()
+                                    end
+                                    break
+                                end
+                            end
+                        end)
+                        -- if the waypoint doesn't get removed when npc is dead blame this --
+                        if err then
+                            warn(err)
+                        end
+                        if createWaypoint then
+                            for i, wp in pairs(waypoints) do
+                                if wp == createWaypoint then
+                                    waypoints[i] = nil
+                                end
+                            end
+                            createWaypoint:Destroy()
+                        end
+        end)
+        updateWaypoint()
+    else
+        local splitName = string.split(npc.Name, " ")
+        if #splitName >= 3 and npc.Name ~= "King David Silver" then
+            local createWaypoint = newWaypoint:Clone()
+            createWaypoint.Name = npc.Name
+            createWaypoint.UI.NPCName.Text = npc.Name
+            createWaypoint.Parent = workspace.CurrentCamera
+            waypoints[#waypoints+1] = createWaypoint
+            local updateWaypoint = coroutine.wrap(function()
+                local success, err = pcall(function()
+                    while wait() do
+                        if npc and createWaypoint then
+                            local npcHum = npc:FindFirstChild("Humanoid")
+                            if npcHum then
+                                if npcHum.Health <= 0 then
+                                    for i, wp in pairs(waypoints) do
+                                        if wp == createWaypoint then
+                                            waypoints[i] = nil
+                                        end
+                                    end
+                                    createWaypoint:Destroy()
+                                end
+                            else
+                                for i, wp in pairs(waypoints) do
+                                    if wp == createWaypoint then
+                                        waypoints[i] = nil
+                                    end
+                                end
+                                createWaypoint:Destroy()
+                            end
+                            createWaypoint.CFrame = npc.PrimaryPart.CFrame
+                            local plr = game:GetService("Players").LocalPlayer
+                            local chara = plr.Character or plr.CharacterAdded:Wait()
+                            local hrp = chara.PrimaryPart or chara:WaitForChild("HumanoidRootPart")
+                            createWaypoint.UI.Distance.Text = math.ceil(((hrp.Position - npc.PrimaryPart.Position).Magnitude)/3.571).."m"
+                        else
+                            if createWaypoint then
+                                for i, wp in pairs(waypoints) do
+                                    if wp == createWaypoint then
+                                        waypoints[i] = nil
+                                    end
+                                end
+                                createWaypoint:Destroy()
+                            end
+                            break
+                        end
+                    end
+                end)
+                -- if the waypoint doesn't get removed when npc is dead blame this --
+                if err then
+                    warn(err)
+                end
+                if createWaypoint then
+                    for i, wp in pairs(waypoints) do
+                        if wp == createWaypoint then
+                            waypoints[i] = nil
+                        end
+                    end
+                    createWaypoint:Destroy()
+                end
+            end)
+            updateWaypoint()
+        end
+    end
+                end
+            end
+        end
+    end
+end)
+npcCoroutine()
+
 workspace:WaitForChild("NPCs").ChildAdded:Connect(function(npc)
     if npc.Name == "The Exiled" or npc.Name == "Minotaur" then
         local createWaypoint = newWaypoint:Clone()
